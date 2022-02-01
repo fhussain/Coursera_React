@@ -4,21 +4,16 @@ import { Card, CardTitle, CardText, CardBody, CardImg} from 'reactstrap';
 class DishDetail extends Component{
     constructor(props){
         super(props);
-        this.state = {
-
-        };
-    }
-    getDate(string){
-        let date = new Date(string);
-        return date.toDateString();
     }
     renderComment(comments){
         if(comments!=null){
             const renderComm=comments.map((comments)=>{
                 return (
                     <div>
-                        <p>{comments.comment}</p>
-                        <p>-- {comments.author} , {this.getDate(comments.date)}</p>
+                        <ul className="list-unstyled">
+                            <li>{comments.comment}</li>
+                            <li>-- {comments.author} , {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comments.date)))}</li>
+                        </ul>
                     </div>
                 );
             });
@@ -31,8 +26,9 @@ class DishDetail extends Component{
         }
     }
     renderDishDetail(dish){
-            if(dish!=null){
-                return(
+        if(dish!=null){
+            return(
+                <div className="container">
                     <div className="row">
                         <div className="col-12 col-md-5 m-1">
                             <Card>
@@ -48,16 +44,16 @@ class DishDetail extends Component{
                             {this.renderComment(this.props.dish.comments)};
                         </div>
                     </div>
-                 )
-            }
-            else{
-                return(
-                    <div></div>
+                </div>
                 )
-            }
+        }
+        else{
+            return(
+                <div></div>
+            )
+        }
     }
     render(){
-
         return(
             this.renderDishDetail(this.props.dish)
         );
