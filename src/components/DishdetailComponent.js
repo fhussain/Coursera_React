@@ -3,6 +3,7 @@ import { Card, CardTitle, CardText, CardBody, CardImg,  Breadcrumb, BreadcrumbIt
 import { Link } from 'react-router-dom';
 import { Component} from 'react';
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Loading } from './LoadingComponent';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
@@ -24,9 +25,7 @@ const minLength = (len) => (val) => val && (val.length >= len);
         }
         handleSubmit(values) {
             this.toggleModal();
-            console.log('Current State is: ' + JSON.stringify(values));
-            alert('Current State is: ' + JSON.stringify(values));
-           // event.preventDefault();
+            this.props.addComment(this.props.dishId, values.rating, values.author, values.message);
         }
         render(){
             return (
@@ -91,7 +90,7 @@ const minLength = (len) => (val) => val && (val.length >= len);
             )
         }
     }
-    function RenderComment({comments}){
+    function RenderComment({comments, addComment, dishId}){
         if(comments!=null){
             const renderComm=comments.map((comments)=>{
             return (
@@ -105,7 +104,7 @@ const minLength = (len) => (val) => val && (val.length >= len);
                 <div className="col-12 col-md-5 m-1">
                     <h4>Comments:</h4>
                     {renderComm}
-                    <CommentForm/>
+                    <CommentForm dishId={dishId} addComment={addComment}/>
                 </div>
             )
         }
@@ -129,7 +128,25 @@ const minLength = (len) => (val) => val && (val.length >= len);
             );
     }
     const DishDetail=(props)=> {
-        if(props.dish!=null){ 
+        if (props.isLoading) {
+            return(
+                <div className="container">
+                    <div className="row">            
+                        <Loading />
+                    </div>
+                </div>
+            );
+        }
+        else if (props.errMess) {
+            return(
+                <div className="container">
+                    <div className="row">            
+                        <h4>{props.errMess}</h4>
+                    </div>
+                </div>
+            );
+        }
+        else if(props.dish!=null){ 
             return(
                 <div className="container">
                     <div className="row">
@@ -140,7 +157,9 @@ const minLength = (len) => (val) => val && (val.length >= len);
                     </div>
                     <div className="row">
                         <RenderDishDetail dish={props.dish}/>
-                        <RenderComment comments={props.comments}/>
+                        <RenderComment comments={props.comments}
+                            addComment={props.addComment}
+                            dishId={props.dish.id}/>
                     </div>
                 </div>
             );
